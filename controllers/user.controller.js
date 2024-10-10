@@ -10,7 +10,10 @@ exports.getUser = async (req, res, next) => {
     if (user) {
       return res.status(200).json({ message: "get user success", user });
     }
-    res.status(200).json({ message: "get user without authen as guess" });
+    res.status(200).json({
+      message: "get user without authen as guess",
+      user: false,
+    });
   } catch (err) {
     next(err);
   }
