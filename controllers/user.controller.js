@@ -6,9 +6,20 @@ const sendVerificationEmail = require("../utils/sendingEmail");
 
 exports.getUser = async (req, res, next) => {
   try {
-    const user = req.user;
-    if (user) {
-      return res.status(200).json({ message: "get user success", user });
+    const userId = req.userId;
+    if (userId) {
+      const user = await User.findByPk(userId, {
+        attributes: { exclude: ["password"] },
+      });
+
+      return res.status(200).json({
+        message: "get user success",
+        user: {
+          username: user.username,
+          email: user.email,
+          isVerified: user.isVerified,
+        },
+      });
     }
     res.status(200).json({
       message: "get user without authen as guess",

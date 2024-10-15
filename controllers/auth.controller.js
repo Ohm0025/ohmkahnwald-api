@@ -17,6 +17,9 @@ exports.login = async (req, res, next) => {
       message: "Login Success",
       des: `welcome ${user.username}`,
       success: true,
+      username: user.username,
+      email: user.email,
+      isVerified: user.isVerified,
     });
   } catch (err) {
     console.error(err);
