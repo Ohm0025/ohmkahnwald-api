@@ -1,18 +1,21 @@
 const AppError = require("../utils/errorObj");
-const { PostBlog } = require("../models");
+const { PostBlog, User } = require("../models");
 
 exports.createPostBlog = async (req, res, next) => {
   try {
     const userId = req.userId;
     const postData = req.body;
+
     if (!userId) {
       throw new AppError(
         "This feature allow to member only , Please login first",
         400
       );
     }
+
     const post = await PostBlog.create({
       ...postData,
+      thumbnail: req.cloudinaryUrl,
       userId,
     });
     if (post.postBlogId) {
@@ -27,7 +30,10 @@ exports.getCurrentPost = async (req, res, next) => {
   try {
     const { postBlogId } = req.params;
     const userId = req.userId;
-    const post = PostBlog.findByPk(postBlogId);
+    const post = await PostBlog.findByPk(postBlogId, {
+      include: [{ model: User, attributes: ["username"] }],
+    });
+
     if (post.publicity) {
       return res.status(200).json({ post });
     } else if (userId) {
@@ -56,8 +62,16 @@ exports.getUserPosts = async (req, res, next) => {
       );
     }
 
-    const userPosts = await PostBlog.findAll({ where: { userId } });
-    console.log(userPosts);
+    const userPosts = await PostBlog.findAll({
+      where: { userId },
+      attributes: [
+        "postBlogId",
+        "title",
+        "thumbnail",
+        "publicity",
+        "updatedAt",
+      ],
+    });
     return res.status(200).json({ userPosts });
   } catch (err) {
     next(err);
