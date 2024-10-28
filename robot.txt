@@ -1,0 +1,39 @@
+# Allow all robots complete access
+User-agent: *
+Allow: /
+
+# Allow AdSense bot specific access
+User-agent: Mediapartners-Google
+Allow: /
+
+# Allow Google Mobile AdSense bot
+User-agent: Mediapartners-Google*
+Allow: /
+
+# Allow Google AdSense bot
+User-agent: Adsbot-Google
+Allow: /
+
+# Allow Google Mobile Ads bot
+User-agent: AdsBot-Google-Mobile
+Allow: /
+
+# Common crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /
+
+User-agent: Googlebot-Mobile
+Allow: /
+
+# Sitemap location (replace with your actual sitemap URL)
+Sitemap: https://ohmkahnwald.com/sitemap.xml
+
+# Disallow specific paths (customize as needed)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /*.xml$
