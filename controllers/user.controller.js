@@ -18,6 +18,8 @@ exports.getUser = async (req, res, next) => {
           username: user.username,
           email: user.email,
           isVerified: user.isVerified,
+          bio: user.bio,
+          imgProfile: user.imgProfile,
         },
       });
     }
@@ -33,8 +35,8 @@ exports.getUser = async (req, res, next) => {
 exports.createUser = async (req, res, next) => {
   try {
     const { username, email, password } = req.body;
-    const user = req.user;
-    if (user) {
+    const userId = req.userId;
+    if (userId) {
       throw new AppError(
         "You already login , please logout before register",
         401
@@ -52,11 +54,10 @@ exports.createUser = async (req, res, next) => {
       createdUser.verifyCode
     );
     if (emailResult.accepted[0] === email) {
-      setCookiesIn(createdUser);
+      setCookiesIn(createdUser, res);
       return res.status(201).json({
         message: "Register Success",
-        description:
-          'Please Wait about 1-2 min and Check your email for the verification code"',
+        des: 'Please Wait about 1-2 min and Check your email for the verification code"',
       });
     }
     throw new AppError("Register Failed , Please correct your email", 401);
@@ -68,11 +69,14 @@ exports.createUser = async (req, res, next) => {
 exports.verifyEmail = async (req, res, next) => {
   try {
     const { code } = req.body;
-    const user = req.user;
+    const userId = req.userId;
 
-    if (!user) {
+    if (!userId) {
       throw new AppError("Please login by registered email", 401);
     }
+    const user = await User.findByPk(userId, {
+      attributes: { exclude: ["password"] },
+    });
     if (!!user.isVerified) {
       checkExpiredCode(user.updatedAt);
       throw new AppError(

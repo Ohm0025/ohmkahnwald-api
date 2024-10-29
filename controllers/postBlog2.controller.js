@@ -1,5 +1,12 @@
 const AppError = require("../utils/errorObj");
 const { PostBlog, Sequelize } = require("../models");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 exports.editPostBlog = async (req, res, next) => {
   try {
@@ -22,10 +29,25 @@ exports.editPostBlog = async (req, res, next) => {
     if (!selectedPost) {
       throw new AppError("Post not found", 404);
     }
-    const updatedPost = await selectedPost.update({
-      ...editedPost,
-      thumbnail: req.cloudinaryUrl,
-    });
+    let updatedPost;
+
+    if (req.cloudinaryUrl) {
+      const matches = selectedPost.thumbnail?.match(/\/v\d+\/(.+)$/);
+
+      if (matches && matches[1]) {
+        const publicId = matches[1].replace(/\.[^/.]+$/, "");
+        await cloudinary.uploader.destroy(publicId);
+      }
+
+      updatedPost = await selectedPost.update({
+        ...editedPost,
+        thumbnail: req.cloudinaryUrl,
+      });
+    } else {
+      updatedPost = await selectedPost.update({
+        ...editedPost,
+      });
+    }
     res.status(201).json({ post: updatedPost });
   } catch (err) {
     next(err);

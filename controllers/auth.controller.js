@@ -19,7 +19,9 @@ exports.login = async (req, res, next) => {
       success: true,
       username: user.username,
       email: user.email,
+      bio: user.bio,
       isVerified: user.isVerified,
+      imgProfile: user.imgProfile,
     });
   } catch (err) {
     console.error(err);
