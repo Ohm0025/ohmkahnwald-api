@@ -85,6 +85,22 @@ module.exports = (sequelize, DataTypes) => {
       },
       onDelete: "CASCADE",
     });
+
+    User.hasMany(db.Friend, {
+      foreignKey: {
+        name: "senderId",
+        allowNull: false,
+      },
+      onDelete: "CASCADE",
+    });
+
+    User.hasMany(db.Friend, {
+      foreignKey: {
+        name: "recieverId",
+        allowNull: false,
+      },
+      onDelete: "CASCADE",
+    });
   };
 
   return User;

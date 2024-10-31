@@ -14,7 +14,11 @@ const {
   updateUserProfile,
   updateImgProfile,
 } = require("../controllers/user2.controller");
-const { getAnotherByUsername } = require("../controllers/user3.controller");
+const {
+  getAnotherByUsername,
+  getAnotherUser,
+  sendFriendRequest,
+} = require("../controllers/user3.controller");
 
 const router = express.Router();
 
@@ -30,5 +34,7 @@ router.patch(
   uploadToCloudinary,
   updateImgProfile
 );
+router.get("/get-another-user/:username", getAnotherUser);
+router.get("/send-friend-request/:username", sendFriendRequest);
 
 module.exports = router;
