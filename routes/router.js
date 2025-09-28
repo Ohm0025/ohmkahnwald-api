@@ -9,7 +9,7 @@ const router = express.Router();
 
 router.use("/user", checkAuth, userRoute);
 router.use("/auth", authRoute);
-router.use("/postBlog", postBlogRoute);
+router.use("/postBlog", checkAuth, postBlogRoute);
 router.use("/image", imageRoute);
 
 module.exports = router;
