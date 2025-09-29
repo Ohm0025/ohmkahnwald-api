@@ -5,12 +5,15 @@ const cookies = process.env.COOKIES;
 const jwt_sec = process.env.JWT_SECRET;
 
 const checkAuth = async (req, res, next) => {
-  const token = req.cookies[cookies];
+  if (req.cookies) {
+    const token = req.cookies[cookies];
+    if (token) {
+      const decoded = jwt.verify(token, jwt_sec);
+      req.userId = decoded.userId;
+    }
 
-  if (token) {
-    const decoded = jwt.verify(token, jwt_sec);
-    console.log(decoded);
-    req.userId = decoded.userId;
+    console.log(req.cookies);
+    console.log(token);
   }
 
   next();
