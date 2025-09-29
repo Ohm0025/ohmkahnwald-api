@@ -13,6 +13,7 @@ exports.setCookiesIn = (user, res) => {
   res.cookie(process.env.COOKIES, token, {
     httpOnly: true,
     secure: true,
+    sameSite: "none",
     maxAge: 3600000 * 24,
   });
 };
