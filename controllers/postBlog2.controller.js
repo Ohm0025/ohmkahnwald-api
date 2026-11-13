@@ -1,5 +1,6 @@
 const AppError = require("../utils/errorObj");
-const { PostBlog, Sequelize } = require("../models");
+const { PostBlog, User, Sequelize } = require("../models");
+const { getPagination, pageMeta } = require("../utils/pagination");
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
@@ -68,11 +69,15 @@ exports.getCarouselPost = async (req, res, next) => {
 
 exports.getRecentPost = async (req, res, next) => {
   try {
-    const posts = await PostBlog.findAll({
+    const { page, limit, offset } = getPagination(req.query);
+    const { count, rows } = await PostBlog.findAndCountAll({
+      include: [{ model: User, attributes: ["username"] }],
       order: [["createdAt", "DESC"]],
-      limit: 12,
+      limit,
+      offset,
+      distinct: true,
     });
-    res.status(201).json({ posts });
+    res.status(200).json({ posts: rows, ...pageMeta(count, page, limit) });
   } catch (err) {
     next(err);
   }

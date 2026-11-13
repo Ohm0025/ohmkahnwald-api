@@ -1,6 +1,17 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
 
+// The site (ohmkahnwald.com) and the API (Railway) are on different domains,
+// so the auth cookie must be Secure + SameSite=None.
+// Browsers only delete a cookie when the clearing Set-Cookie header uses the
+// SAME attributes it was set with — so set and clear share these options.
+const COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+};
+
 exports.setCookiesIn = (user, res) => {
   //add cookies
   const token = jwt.sign(
@@ -11,13 +22,11 @@ exports.setCookiesIn = (user, res) => {
     }
   );
   res.cookie(process.env.COOKIES, token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
+    ...COOKIE_OPTIONS,
     maxAge: 3600000 * 24,
   });
 };
 
 exports.setCookiesOut = (res) => {
-  res.clearCookie(process.env.COOKIES);
+  res.clearCookie(process.env.COOKIES, COOKIE_OPTIONS);
 };

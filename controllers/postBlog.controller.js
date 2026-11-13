@@ -1,5 +1,6 @@
 const AppError = require("../utils/errorObj");
 const { PostBlog, User } = require("../models");
+const { getPagination, pageMeta } = require("../utils/pagination");
 
 exports.createPostBlog = async (req, res, next) => {
   try {
@@ -62,17 +63,24 @@ exports.getUserPosts = async (req, res, next) => {
       );
     }
 
-    const userPosts = await PostBlog.findAll({
+    const { page, limit, offset } = getPagination(req.query);
+    const { count, rows } = await PostBlog.findAndCountAll({
       where: { userId },
       attributes: [
         "postBlogId",
         "title",
         "thumbnail",
         "publicity",
+        "createdAt",
         "updatedAt",
       ],
+      order: [["createdAt", "DESC"]],
+      limit,
+      offset,
     });
-    return res.status(200).json({ userPosts });
+    return res
+      .status(200)
+      .json({ userPosts: rows, ...pageMeta(count, page, limit) });
   } catch (err) {
     next(err);
   }
